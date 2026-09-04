@@ -1,0 +1,1493 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+  <meta name="theme-color" content="#0b1020">
+  <meta name="description" content="دستیار هوش مصنوعی صوتی فارسی">
+  <title>دستیار هوش مصنوعی</title>
+
+  <style>
+    * {
+      box-sizing: border-box;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    :root {
+      --bg: #070b16;
+      --card: rgba(18, 25, 45, .82);
+      --card2: rgba(28, 37, 64, .72);
+      --text: #f7f9ff;
+      --muted: #9da8c0;
+      --primary: #6c63ff;
+      --primary2: #8f88ff;
+      --success: #25d366;
+      --danger: #ff5268;
+      --border: rgba(255,255,255,.09);
+      --shadow: 0 20px 60px rgba(0,0,0,.35);
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family:
+        Tahoma,
+        Arial,
+        "Segoe UI",
+        sans-serif;
+      color: var(--text);
+      background:
+        radial-gradient(circle at 15% 10%, rgba(108,99,255,.25), transparent 35%),
+        radial-gradient(circle at 85% 80%, rgba(37,211,102,.12), transparent 30%),
+        var(--bg);
+    }
+
+    button,
+    input,
+    textarea,
+    select {
+      font: inherit;
+    }
+
+    button {
+      cursor: pointer;
+    }
+
+    .app {
+      width: 100%;
+      max-width: 850px;
+      min-height: 100vh;
+      margin: auto;
+      display: flex;
+      flex-direction: column;
+      padding: 16px;
+    }
+
+    header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 14px 4px 18px;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .logo {
+      width: 50px;
+      height: 50px;
+      border-radius: 17px;
+      display: grid;
+      place-items: center;
+      font-size: 25px;
+      background: linear-gradient(135deg, var(--primary), #312d8f);
+      box-shadow: 0 10px 35px rgba(108,99,255,.35);
+    }
+
+    .brand h1 {
+      font-size: 18px;
+      margin: 0 0 4px;
+    }
+
+    .brand p {
+      margin: 0;
+      font-size: 12px;
+      color: var(--muted);
+    }
+
+    .settings-btn {
+      width: 44px;
+      height: 44px;
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      color: white;
+      background: var(--card);
+      font-size: 20px;
+    }
+
+    .status {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      width: fit-content;
+      margin: 0 auto 14px;
+      padding: 7px 12px;
+      border-radius: 50px;
+      background: rgba(255,255,255,.05);
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--success);
+      box-shadow: 0 0 12px var(--success);
+    }
+
+    .chat {
+      flex: 1;
+      overflow-y: auto;
+      padding: 8px 2px 150px;
+      scroll-behavior: smooth;
+    }
+
+    .welcome {
+      text-align: center;
+      padding: 55px 20px 30px;
+    }
+
+    .welcome-icon {
+      width: 90px;
+      height: 90px;
+      margin: auto;
+      display: grid;
+      place-items: center;
+      border-radius: 30px;
+      font-size: 42px;
+      background:
+        linear-gradient(135deg,
+        rgba(108,99,255,.3),
+        rgba(108,99,255,.05));
+      border: 1px solid rgba(255,255,255,.08);
+      box-shadow: var(--shadow);
+    }
+
+    .welcome h2 {
+      margin: 22px 0 10px;
+      font-size: 24px;
+    }
+
+    .welcome p {
+      color: var(--muted);
+      line-height: 1.9;
+      font-size: 14px;
+    }
+
+    .message {
+      display: flex;
+      margin: 12px 0;
+      animation: appear .25s ease;
+    }
+
+    .message.user {
+      justify-content: flex-start;
+    }
+
+    .message.ai {
+      justify-content: flex-end;
+    }
+
+    .bubble {
+      max-width: 82%;
+      padding: 13px 15px;
+      border-radius: 20px;
+      line-height: 1.9;
+      white-space: pre-wrap;
+      word-break: break-word;
+      font-size: 14px;
+      box-shadow: 0 8px 25px rgba(0,0,0,.16);
+    }
+
+    .user .bubble {
+      background: linear-gradient(135deg, #242d49, #192039);
+      border-bottom-left-radius: 6px;
+    }
+
+    .ai .bubble {
+      background: linear-gradient(135deg, #655df5, #4640b9);
+      border-bottom-right-radius: 6px;
+    }
+
+    .bubble-time {
+      display: block;
+      margin-top: 5px;
+      font-size: 9px;
+      opacity: .55;
+    }
+
+    .typing {
+      display: none;
+      justify-content: flex-end;
+      margin: 12px 0;
+    }
+
+    .typing .bubble {
+      display: flex;
+      gap: 5px;
+      align-items: center;
+      padding: 15px 18px;
+    }
+
+    .typing span {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: white;
+      opacity: .6;
+      animation: bounce 1s infinite;
+    }
+
+    .typing span:nth-child(2) {
+      animation-delay: .15s;
+    }
+
+    .typing span:nth-child(3) {
+      animation-delay: .3s;
+    }
+
+    .composer {
+      position: fixed;
+      bottom: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      width: min(850px, 100%);
+      padding: 12px 16px 18px;
+      background:
+        linear-gradient(
+          to top,
+          rgba(7,11,22,1) 65%,
+          rgba(7,11,22,.85),
+          transparent
+        );
+      z-index: 20;
+    }
+
+    .input-box {
+      display: flex;
+      align-items: flex-end;
+      gap: 8px;
+      padding: 8px;
+      border-radius: 23px;
+      background: rgba(19,26,47,.94);
+      border: 1px solid var(--border);
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(20px);
+    }
+
+    textarea {
+      flex: 1;
+      min-height: 45px;
+      max-height: 130px;
+      resize: none;
+      border: 0;
+      outline: 0;
+      background: transparent;
+      color: white;
+      padding: 11px 10px;
+      line-height: 1.7;
+    }
+
+    textarea::placeholder {
+      color: #7f8aa3;
+    }
+
+    .icon-btn {
+      flex: 0 0 46px;
+      width: 46px;
+      height: 46px;
+      border: 0;
+      border-radius: 16px;
+      color: white;
+      background: rgba(255,255,255,.07);
+      font-size: 20px;
+      transition: .2s;
+    }
+
+    .icon-btn:active {
+      transform: scale(.92);
+    }
+
+    .mic {
+      background: linear-gradient(135deg, var(--primary), #453db8);
+      box-shadow: 0 8px 25px rgba(108,99,255,.25);
+    }
+
+    .mic.listening {
+      background: linear-gradient(135deg, var(--danger), #b52445);
+      animation: pulse 1.2s infinite;
+    }
+
+    .send {
+      background: var(--success);
+      color: #07130b;
+      font-weight: bold;
+    }
+
+    .quick-actions {
+      display: flex;
+      gap: 7px;
+      overflow-x: auto;
+      padding: 8px 2px 0;
+      scrollbar-width: none;
+    }
+
+    .quick-actions::-webkit-scrollbar {
+      display: none;
+    }
+
+    .quick {
+      white-space: nowrap;
+      border: 1px solid var(--border);
+      background: rgba(255,255,255,.045);
+      color: #cbd2e4;
+      padding: 8px 12px;
+      border-radius: 50px;
+      font-size: 11px;
+    }
+
+    .modal {
+      display: none;
+      position: fixed;
+      inset: 0;
+      z-index: 100;
+      background: rgba(0,0,0,.65);
+      backdrop-filter: blur(8px);
+      padding: 20px;
+    }
+
+    .modal.show {
+      display: grid;
+      place-items: center;
+    }
+
+    .modal-card {
+      width: min(500px, 100%);
+      max-height: 90vh;
+      overflow: auto;
+      background: #11182c;
+      border: 1px solid var(--border);
+      border-radius: 25px;
+      padding: 20px;
+      box-shadow: var(--shadow);
+    }
+
+    .modal-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 18px;
+    }
+
+    .modal-head h3 {
+      margin: 0;
+    }
+
+    .close {
+      width: 38px;
+      height: 38px;
+      border: 0;
+      border-radius: 12px;
+      background: rgba(255,255,255,.07);
+      color: white;
+      font-size: 20px;
+    }
+
+    label {
+      display: block;
+      color: #cbd2e4;
+      font-size: 12px;
+      margin: 15px 0 7px;
+    }
+
+    input,
+    select {
+      width: 100%;
+      height: 46px;
+      border: 1px solid var(--border);
+      border-radius: 13px;
+      outline: 0;
+      background: rgba(255,255,255,.05);
+      color: white;
+      padding: 0 12px;
+    }
+
+    option {
+      background: #11182c;
+    }
+
+    .save {
+      width: 100%;
+      height: 48px;
+      margin-top: 18px;
+      border: 0;
+      border-radius: 14px;
+      color: white;
+      background: linear-gradient(135deg, var(--primary), #4840c0);
+      font-weight: bold;
+    }
+
+    .danger {
+      width: 100%;
+      height: 45px;
+      margin-top: 9px;
+      border: 1px solid rgba(255,82,104,.25);
+      border-radius: 14px;
+      background: rgba(255,82,104,.08);
+      color: #ff8797;
+    }
+
+    .note {
+      margin-top: 15px;
+      padding: 12px;
+      border-radius: 13px;
+      background: rgba(255,193,7,.06);
+      border: 1px solid rgba(255,193,7,.12);
+      color: #d8c990;
+      font-size: 11px;
+      line-height: 1.8;
+    }
+
+    .toast {
+      position: fixed;
+      top: 20px;
+      left: 50%;
+      transform: translate(-50%, -120px);
+      z-index: 200;
+      background: #202a43;
+      border: 1px solid var(--border);
+      color: white;
+      padding: 11px 17px;
+      border-radius: 50px;
+      font-size: 12px;
+      box-shadow: var(--shadow);
+      transition: .3s;
+    }
+
+    .toast.show {
+      transform: translate(-50%, 0);
+    }
+
+    @keyframes appear {
+      from {
+        opacity: 0;
+        transform: translateY(8px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    @keyframes bounce {
+      0%, 60%, 100% {
+        transform: translateY(0);
+      }
+      30% {
+        transform: translateY(-5px);
+      }
+    }
+
+    @keyframes pulse {
+      0%,100% {
+        box-shadow: 0 0 0 0 rgba(255,82,104,.35);
+      }
+      50% {
+        box-shadow: 0 0 0 13px rgba(255,82,104,0);
+      }
+    }
+
+    @media (max-width: 500px) {
+      .app {
+        padding: 10px;
+      }
+
+      .bubble {
+        max-width: 88%;
+      }
+
+      .welcome {
+        padding-top: 40px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+<div class="app">
+
+  <header>
+    <div class="brand">
+      <div class="logo">🤖</div>
+      <div>
+        <h1>دستیار هوش مصنوعی</h1>
+        <p>دستیار صوتی فارسی شما</p>
+      </div>
+    </div>
+
+    <button class="settings-btn" id="settingsBtn" aria-label="تنظیمات">
+      ⚙️
+    </button>
+  </header>
+
+  <div class="status">
+    <span class="dot"></span>
+    <span id="statusText">آماده به کار</span>
+  </div>
+
+  <main class="chat" id="chat">
+
+    <div class="welcome" id="welcome">
+      <div class="welcome-icon">🎙️</div>
+      <h2>سلام! 👋</h2>
+      <p>
+        من دستیار صوتی فارسی تو هستم.<br>
+        روی میکروفون بزن و صحبت کن.
+      </p>
+    </div>
+
+    <div class="typing" id="typing">
+      <div class="bubble">
+        <span></span>
+        <span></span>
+        <span></span>
+      </div>
+    </div>
+
+  </main>
+
+</div>
+
+<div class="composer">
+
+  <div class="input-box">
+
+    <button
+      class="icon-btn mic"
+      id="micBtn"
+      title="صحبت کردن">
+      🎙️
+    </button>
+
+    <textarea
+      id="messageInput"
+      rows="1"
+      placeholder="پیامت را بنویس یا صحبت کن..."></textarea>
+
+    <button
+      class="icon-btn send"
+      id="sendBtn"
+      title="ارسال">
+      ➤
+    </button>
+
+  </div>
+
+  <div class="quick-actions">
+    <button class="quick" data-message="سلام، خوبی؟">👋 سلام</button>
+    <button class="quick" data-message="امروز چه خبر؟">📰 اخبار</button>
+    <button class="quick" data-message="یک لطیفه بگو">😂 یک لطیفه</button>
+    <button class="quick" data-message="برای من یک ایده جالب بده">💡 ایده</button>
+  </div>
+
+</div>
+
+
+<!-- SETTINGS -->
+
+<div class="modal" id="settingsModal">
+
+  <div class="modal-card">
+
+    <div class="modal-head">
+      <h3>⚙️ تنظیمات</h3>
+
+      <button class="close" id="closeSettings">
+        ×
+      </button>
+    </div>
+
+    <label for="apiMode">
+      حالت اتصال
+    </label>
+
+    <select id="apiMode">
+      <option value="demo">
+        حالت دمو — بدون API
+      </option>
+      <option value="openai">
+        API سازگار با OpenAI
+      </option>
+    </select>
+
+    <label for="apiUrl">
+      آدرس API
+    </label>
+
+    <input
+      id="apiUrl"
+      type="url"
+      placeholder="https://api.openai.com/v1/chat/completions">
+
+    <label for="apiKey">
+      API Key
+    </label>
+
+    <input
+      id="apiKey"
+      type="password"
+      placeholder="کلید API را وارد کنید">
+
+    <label for="model">
+      مدل
+    </label>
+
+    <input
+      id="model"
+      type="text"
+      value="gpt-5-mini"
+      placeholder="نام مدل">
+
+    <label for="voiceSelect">
+      صدای پاسخ
+    </label>
+
+    <select id="voiceSelect">
+      <option value="auto">
+        انتخاب خودکار فارسی
+      </option>
+    </select>
+
+    <button class="save" id="saveSettings">
+      💾 ذخیره تنظیمات
+    </button>
+
+    <button class="danger" id="clearChat">
+      🗑️ پاک کردن گفت‌وگو
+    </button>
+
+    <div class="note">
+      🔐 نکته امنیتی:<br>
+      API Key در GitHub Pages قابل مخفی‌کردن نیست.
+      برای انتشار عمومی، بهتر است این برنامه را به یک
+      Worker یا Backend متصل کنیم و کلید را روی سرور نگه داریم.
+    </div>
+
+  </div>
+
+</div>
+
+
+<div class="toast" id="toast"></div>
+
+
+<script>
+"use strict";
+
+/* ==========================================
+   AI VOICE APP
+   Persian RTL Voice Assistant
+   ========================================== */
+
+const $ = id => document.getElementById(id);
+
+const chat = $("chat");
+const welcome = $("welcome");
+const messageInput = $("messageInput");
+const sendBtn = $("sendBtn");
+const micBtn = $("micBtn");
+const typing = $("typing");
+const statusText = $("statusText");
+const toast = $("toast");
+
+const settingsBtn = $("settingsBtn");
+const settingsModal = $("settingsModal");
+const closeSettings = $("closeSettings");
+
+const apiMode = $("apiMode");
+const apiUrl = $("apiUrl");
+const apiKey = $("apiKey");
+const model = $("model");
+const voiceSelect = $("voiceSelect");
+
+let recognition = null;
+let listening = false;
+let voices = [];
+let conversation = [];
+
+
+/* ==========================================
+   STORAGE
+   ========================================== */
+
+function loadSettings() {
+
+  const saved = JSON.parse(
+    localStorage.getItem("aiVoiceSettings") || "{}"
+  );
+
+  apiMode.value = saved.apiMode || "demo";
+
+  apiUrl.value =
+    saved.apiUrl ||
+    "https://api.openai.com/v1/chat/completions";
+
+  apiKey.value = saved.apiKey || "";
+
+  model.value =
+    saved.model ||
+    "gpt-5-mini";
+
+}
+
+function saveSettings() {
+
+  const data = {
+    apiMode: apiMode.value,
+    apiUrl: apiUrl.value.trim(),
+    apiKey: apiKey.value.trim(),
+    model: model.value.trim()
+  };
+
+  localStorage.setItem(
+    "aiVoiceSettings",
+    JSON.stringify(data)
+  );
+
+  showToast("تنظیمات ذخیره شد ✅");
+  settingsModal.classList.remove("show");
+}
+
+
+/* ==========================================
+   TOAST
+   ========================================== */
+
+let toastTimer;
+
+function showToast(message) {
+
+  toast.textContent = message;
+  toast.classList.add("show");
+
+  clearTimeout(toastTimer);
+
+  toastTimer = setTimeout(() => {
+    toast.classList.remove("show");
+  }, 2800);
+}
+
+
+/* ==========================================
+   CHAT UI
+   ========================================== */
+
+function addMessage(text, type) {
+
+  welcome.style.display = "none";
+
+  const wrapper = document.createElement("div");
+
+  wrapper.className =
+    "message " + (type === "user" ? "user" : "ai");
+
+  const bubble = document.createElement("div");
+
+  bubble.className = "bubble";
+
+  bubble.textContent = text;
+
+  const time = document.createElement("span");
+
+  time.className = "bubble-time";
+
+  time.textContent =
+    new Date().toLocaleTimeString("fa-IR", {
+      hour: "2-digit",
+      minute: "2-digit"
+    });
+
+  bubble.appendChild(time);
+
+  wrapper.appendChild(bubble);
+
+  chat.insertBefore(wrapper, typing);
+
+  scrollChat();
+}
+
+
+function scrollChat() {
+
+  setTimeout(() => {
+    chat.scrollTop = chat.scrollHeight;
+  }, 50);
+
+}
+
+
+/* ==========================================
+   TYPING
+   ========================================== */
+
+function setTyping(show) {
+
+  typing.style.display =
+    show ? "flex" : "none";
+
+  statusText.textContent =
+    show ? "در حال فکر کردن..." : "آماده به کار";
+
+  if (show) {
+    scrollChat();
+  }
+
+}
+
+
+/* ==========================================
+   TEXTAREA
+   ========================================== */
+
+messageInput.addEventListener("input", function() {
+
+  this.style.height = "auto";
+
+  this.style.height =
+    Math.min(this.scrollHeight, 130) + "px";
+
+});
+
+
+messageInput.addEventListener("keydown", function(e) {
+
+  if (e.key === "Enter" && !e.shiftKey) {
+
+    e.preventDefault();
+
+    sendMessage();
+
+  }
+
+});
+
+
+/* ==========================================
+   SEND MESSAGE
+   ========================================== */
+
+async function sendMessage(customText = null) {
+
+  const text =
+    (customText !== null
+      ? customText
+      : messageInput.value).trim();
+
+  if (!text) return;
+
+  messageInput.value = "";
+  messageInput.style.height = "auto";
+
+  addMessage(text, "user");
+
+  conversation.push({
+    role: "user",
+    content: text
+  });
+
+  setTyping(true);
+
+  try {
+
+    let response;
+
+    if (apiMode.value === "openai") {
+
+      response = await askAI(text);
+
+    } else {
+
+      response = await demoAI(text);
+
+    }
+
+    addMessage(response, "ai");
+
+    conversation.push({
+      role: "assistant",
+      content: response
+    });
+
+    speak(response);
+
+  } catch (error) {
+
+    console.error(error);
+
+    const message =
+      "متأسفانه مشکلی در اتصال به هوش مصنوعی پیش آمد. 😕\n\n" +
+      "اگر از API استفاده می‌کنی، آدرس API و API Key را بررسی کن.";
+
+    addMessage(message, "ai");
+
+    showToast("خطا در اتصال به هوش مصنوعی");
+
+  } finally {
+
+    setTyping(false);
+
+  }
+
+}
+
+
+/* ==========================================
+   DEMO AI
+   ========================================== */
+
+async function demoAI(text) {
+
+  await delay(700);
+
+  const t = text.toLowerCase();
+
+  if (
+    t.includes("سلام") ||
+    t.includes("درود")
+  ) {
+    return "سلام عقیل جان 🌹\nخوش اومدی! من آماده‌ام. بگو ببینم امروز چه کاری با هم انجام بدیم؟";
+  }
+
+  if (
+    t.includes("خوبی") ||
+    t.includes("چطوری")
+  ) {
+    return "مرسی که پرسیدی 😄 من خوبم و آماده‌ام کمکت کنم.";
+  }
+
+  if (
+    t.includes("لطیفه") ||
+    t.includes("جوک")
+  ) {
+    return "یه برنامه‌نویس رفت دکتر گفت: هر وقت کد می‌زنم سرم درد می‌گیره! 😄\nدکتر گفت: اول کیبورد رو از سرت بردار!";
+  }
+
+  if (
+    t.includes("اخبار") ||
+    t.includes("خبر")
+  ) {
+    return "برای اخبار لحظه‌ای باید به اینترنت متصل شوم و جست‌وجوی آنلاین انجام بدهم. 🌐";
+  }
+
+  if (
+    t.includes("اسمت") ||
+    t.includes("اسم تو")
+  ) {
+    return "من دستیار هوش مصنوعی صوتی تو هستم 🤖";
+  }
+
+  if (
+    t.includes("ممنون") ||
+    t.includes("مرسی")
+  ) {
+    return "خواهش می‌کنم ❤️ هر وقت خواستی من اینجام.";
+  }
+
+  return (
+    "پیامت رو دریافت کردم. 🤖\n\n" +
+    "الان برنامه در حالت دمو قرار دارد؛ " +
+    "برای گرفتن پاسخ واقعی از مدل هوش مصنوعی، " +
+    "در تنظیمات حالت API را فعال کن."
+  );
+
+}
+
+
+/* ==========================================
+   REAL AI API
+   ========================================== */
+
+async function askAI(text) {
+
+  const key = apiKey.value.trim();
+
+  if (!key) {
+    throw new Error("API Key وارد نشده است.");
+  }
+
+  const endpoint =
+    apiUrl.value.trim() ||
+    "https://api.openai.com/v1/chat/completions";
+
+  const selectedModel =
+    model.value.trim() ||
+    "gpt-5-mini";
+
+  const messages = [
+    {
+      role: "system",
+      content:
+        "تو یک دستیار هوش مصنوعی فارسی هستی. " +
+        "پاسخ‌ها را واضح، طبیعی، دوستانه و به زبان فارسی بده."
+    },
+    ...conversation.slice(-12)
+  ];
+
+  const response = await fetch(endpoint, {
+
+    method: "POST",
+
+    headers: {
+      "Content-Type": "application/json",
+      "Authorization": "Bearer " + key
+    },
+
+    body: JSON.stringify({
+      model: selectedModel,
+      messages: messages,
+      temperature: 0.7
+    })
+
+  });
+
+  if (!response.ok) {
+
+    const errorText =
+      await response.text();
+
+    throw new Error(
+      "API Error " +
+      response.status +
+      ": " +
+      errorText
+    );
+
+  }
+
+  const data =
+    await response.json();
+
+  const result =
+    data?.choices?.[0]?.message?.content;
+
+  if (!result) {
+    throw new Error("پاسخ نامعتبر از API");
+  }
+
+  return result.trim();
+
+}
+
+
+/* ==========================================
+   SPEECH RECOGNITION
+   ========================================== */
+
+function initSpeechRecognition() {
+
+  const SpeechRecognition =
+    window.SpeechRecognition ||
+    window.webkitSpeechRecognition;
+
+  if (!SpeechRecognition) {
+
+    micBtn.disabled = true;
+
+    micBtn.style.opacity = ".45";
+
+    showToast(
+      "مرورگر شما تشخیص صدا را پشتیبانی نمی‌کند."
+    );
+
+    return;
+
+  }
+
+  recognition =
+    new SpeechRecognition();
+
+  recognition.lang = "fa-IR";
+
+  recognition.continuous = false;
+
+  recognition.interimResults = true;
+
+  recognition.maxAlternatives = 1;
+
+
+  recognition.onstart = function() {
+
+    listening = true;
+
+    micBtn.classList.add("listening");
+
+    micBtn.textContent = "⏹️";
+
+    statusText.textContent =
+      "در حال گوش دادن...";
+
+  };
+
+
+  recognition.onresult = function(event) {
+
+    let finalText = "";
+
+    let interimText = "";
+
+    for (
+      let i = event.resultIndex;
+      i < event.results.length;
+      i++
+    ) {
+
+      const transcript =
+        event.results[i][0].transcript;
+
+      if (event.results[i].isFinal) {
+
+        finalText += transcript;
+
+      } else {
+
+        interimText += transcript;
+
+      }
+
+    }
+
+    if (interimText) {
+
+      messageInput.value =
+        interimText;
+
+    }
+
+    if (finalText) {
+
+      messageInput.value =
+        finalText;
+
+      sendMessage();
+
+    }
+
+  };
+
+
+  recognition.onerror = function(event) {
+
+    console.error(
+      "Speech recognition:",
+      event.error
+    );
+
+    if (event.error === "not-allowed") {
+
+      showToast(
+        "اجازه استفاده از میکروفون داده نشده است."
+      );
+
+    } else {
+
+      showToast(
+        "تشخیص صدا با مشکل مواجه شد."
+      );
+
+    }
+
+  };
+
+
+  recognition.onend = function() {
+
+    listening = false;
+
+    micBtn.classList.remove("listening");
+
+    micBtn.textContent = "🎙️";
+
+    statusText.textContent =
+      "آماده به کار";
+
+  };
+
+}
+
+
+/* ==========================================
+   MICROPHONE BUTTON
+   ========================================== */
+
+micBtn.addEventListener("click", function() {
+
+  if (!recognition) {
+
+    showToast(
+      "تشخیص صدا در این مرورگر فعال نیست."
+    );
+
+    return;
+
+  }
+
+  if (listening) {
+
+    recognition.stop();
+
+  } else {
+
+    try {
+
+      messageInput.value = "";
+
+      recognition.start();
+
+    } catch (error) {
+
+      console.error(error);
+
+    }
+
+  }
+
+});
+
+
+/* ==========================================
+   SPEECH SYNTHESIS
+   ========================================== */
+
+function loadVoices() {
+
+  if (!("speechSynthesis" in window)) {
+    return;
+  }
+
+  voices =
+    speechSynthesis.getVoices();
+
+  voiceSelect.innerHTML = "";
+
+  const auto =
+    document.createElement("option");
+
+  auto.value = "auto";
+
+  auto.textContent =
+    "انتخاب خودکار فارسی";
+
+  voiceSelect.appendChild(auto);
+
+  voices.forEach((voice, index) => {
+
+    const option =
+      document.createElement("option");
+
+    option.value = index;
+
+    option.textContent =
+      voice.name +
+      " — " +
+      voice.lang;
+
+    voiceSelect.appendChild(option);
+
+  });
+
+}
+
+
+function speak(text) {
+
+  if (!("speechSynthesis" in window)) {
+    return;
+  }
+
+  speechSynthesis.cancel();
+
+  const utterance =
+    new SpeechSynthesisUtterance(text);
+
+  utterance.lang = "fa-IR";
+
+  utterance.rate = 0.95;
+
+  utterance.pitch = 1;
+
+  const selected =
+    voiceSelect.value;
+
+  if (
+    selected !== "auto" &&
+    voices[selected]
+  ) {
+
+    utterance.voice =
+      voices[selected];
+
+  } else {
+
+    const persianVoice =
+      voices.find(v =>
+        v.lang &&
+        v.lang.toLowerCase()
+          .startsWith("fa")
+      );
+
+    if (persianVoice) {
+      utterance.voice =
+        persianVoice;
+    }
+
+  }
+
+  speechSynthesis.speak(
+    utterance
+  );
+
+}
+
+
+/* ==========================================
+   SETTINGS MODAL
+   ========================================== */
+
+settingsBtn.addEventListener(
+  "click",
+  () => {
+    settingsModal.classList.add("show");
+  }
+);
+
+
+closeSettings.addEventListener(
+  "click",
+  () => {
+    settingsModal.classList.remove("show");
+  }
+);
+
+
+settingsModal.addEventListener(
+  "click",
+  e => {
+
+    if (e.target === settingsModal) {
+      settingsModal.classList.remove("show");
+    }
+
+  }
+);
+
+
+$("saveSettings").addEventListener(
+  "click",
+  saveSettings
+);
+
+
+/* ==========================================
+   CLEAR CHAT
+   ========================================== */
+
+$("clearChat").addEventListener(
+  "click",
+  () => {
+
+    conversation = [];
+
+    document
+      .querySelectorAll(".message")
+      .forEach(el => el.remove());
+
+    welcome.style.display = "block";
+
+    settingsModal.classList.remove("show");
+
+    showToast("گفت‌وگو پاک شد 🗑️");
+
+  }
+);
+
+
+/* ==========================================
+   QUICK BUTTONS
+   ========================================== */
+
+document
+  .querySelectorAll(".quick")
+  .forEach(button => {
+
+    button.addEventListener(
+      "click",
+      () => {
+
+        sendMessage(
+          button.dataset.message
+        );
+
+      }
+    );
+
+  });
+
+
+/* ==========================================
+   SEND BUTTON
+   ========================================== */
+
+sendBtn.addEventListener(
+  "click",
+  () => sendMessage()
+);
+
+
+/* ==========================================
+   HELPERS
+   ========================================== */
+
+function delay(ms) {
+
+  return new Promise(
+    resolve => setTimeout(resolve, ms)
+  );
+
+}
+
+
+/* ==========================================
+   INITIALIZE
+   ========================================== */
+
+loadSettings();
+
+initSpeechRecognition();
+
+loadVoices();
+
+if ("speechSynthesis" in window) {
+
+  speechSynthesis.onvoiceschanged =
+    loadVoices;
+
+}
+
+
+/* ==========================================
+   PWA-LIKE MOBILE EXPERIENCE
+   ========================================== */
+
+window.addEventListener(
+  "beforeunload",
+  () => {
+
+    if (speechSynthesis) {
+      speechSynthesis.cancel();
+    }
+
+  }
+);
+
+</script>
+
+</body>
+</html>
