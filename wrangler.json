@@ -1,0 +1,8 @@
+{
+  "name": "ai-voice-worker",
+  "main": "worker.js",
+  "compatibility_date": "2026-09-05",
+  "vars": {
+    "AI_MODEL": "gpt-5-mini"
+  }
+}
