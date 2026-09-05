@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="fa">
+<head>
+    <meta charset="UTF-8">
+    <title>هوش مصنوعی با صدای نرم</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+    <div class="container">
+        <h2>هوش مصنوعی با صدای خیلی نرم و آهسته</h2>
+
+        <form action="/api/ai-voice" method="POST">
+            <textarea name="prompt" placeholder="متن خود را وارد کنید..." required></textarea>
+            <button type="submit">تولید صدا</button>
+        </form>
+
+        <audio controls>
+            <source src="output.wav" type="audio/wav">
+        </audio>
+    </div>
+</body>
+</html>
