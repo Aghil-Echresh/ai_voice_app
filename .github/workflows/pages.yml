@@ -3,6 +3,8 @@ name: Deploy voice app to GitHub Pages
 on:
   push:
     branches: [main]
+  pull_request:
+    branches: [main]
   workflow_dispatch:
 
 permissions:
@@ -15,7 +17,21 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
+  verify:
+    permissions:
+      contents: read
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - name: Check that the standalone app bundles and parses
+        run: |
+          test -s index.html
+          node -e 'const s=require("node:fs").readFileSync("index.html","utf8");const scripts=[...s.matchAll(/<script>([\s\S]*?)<\/script>/g)];if(!scripts.length)process.exit(1);for(const [,body] of scripts)new (require("node:vm").Script)(body)'
   deploy:
+    needs: verify
     if: github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     environment:
