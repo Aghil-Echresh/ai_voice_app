@@ -13,7 +13,9 @@
 ## نصب ساده
 
 ### 1) GitHub Pages
-فایل `index.html` را در ریشه Repository قرار بده و GitHub Pages را فعال کن.
+در **Settings → Pages → Build and deployment**، منبع را **GitHub Actions** بگذارید.
+گردش‌کار `Deploy voice app to GitHub Pages` فقط `index.html` را از شاخهٔ `main` منتشر می‌کند.
+پس از انتشار، وضعیت اجرای گردش‌کار و صفحهٔ اصلی را بررسی کنید.
 
 ### 2) Cloudflare Worker
 فایل `worker.js` را به عنوان Worker ایجاد/Deploy کن.
